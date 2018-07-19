@@ -2,6 +2,8 @@ var gulp = require('gulp'),
 	$ = require( 'gulp-load-plugins' )({lazy: true});
 
 var path = {
+	app_index: 'index.js',
+	server_files: 'server/',
 	views: ['views/**/*', 'public/html/**/*'],
 	scss: 'src/scss/**/*.scss',
 	coffee: 'src/coffee/**/*.coffee',
@@ -9,6 +11,18 @@ var path = {
 	js: 'public/js'
 }
 
+gulp.task('nodemon', function (cb) {
+	var started = false;
+	return $.nodemon({
+		script: path.app_index,
+		watch: [path.app_index, path.server_files],
+	}).on('start', function () {
+		if (!started) {
+			cb();
+			started = true; 
+		}
+	});
+});
 
 gulp.task('scss', function(){
 	return gulp
@@ -44,6 +58,7 @@ gulp.task('watch', function(){
 
 gulp.task('default', function(){
 	gulp.start(
+		'nodemon',
 		'scss',
 		'coffee',
 		'watch'
